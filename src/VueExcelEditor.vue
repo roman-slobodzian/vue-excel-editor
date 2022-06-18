@@ -2364,6 +2364,9 @@ export default {
         let rowColPos = colPos
 
         row.forEach(cellText => {
+          if (this.table[rowPos] == undefined) {
+            this.newRecord({}, false, true)
+          }
           this.inputCellWrite(cellText, rowColPos++, rowPos)
         })
 
