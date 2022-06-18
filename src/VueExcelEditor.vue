@@ -1244,7 +1244,7 @@ export default {
         return
       }
       const text = (e.originalEvent || e).clipboardData.getData('text/plain')
-      this.inputCellWrite(text)
+      this.inputCellWriteMultiline(text)
       e.preventDefault()
     },
     winKeyup (e) {
@@ -2351,10 +2351,30 @@ export default {
         this.showDatePickerDiv()
       }
     },
+    inputCellWriteMultiline(setText) {
+      let colPos = this.currentColPos
+      let rowPos = this.pageTop + this.currentRowPos
+
+      const rows = setText
+          .trim()
+          .split(/\r\n|\n|\r/)
+          .map(row => row.split('\t'))
+
+      rows.forEach(row => {
+        let rowColPos = colPos
+
+        row.forEach(cellText => {
+          this.inputCellWrite(cellText, rowColPos++, rowPos)
+        })
+
+        rowPos++
+      })
+    },
     inputCellWrite (setText, colPos, recPos) {
       let field = this.currentField
       if (typeof colPos !== 'undefined') field = this.fields[colPos]
       if (typeof recPos === 'undefined') recPos = this.pageTop + this.currentRowPos
+      if (!field) return
       if (typeof this.selected[recPos] !== 'undefined')
         this.updateSelectedRows(field, field.toValue(setText))
       else
